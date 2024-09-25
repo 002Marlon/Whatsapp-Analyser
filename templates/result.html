@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Analyse Ergebnisse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <h1>Chat Analyse Ergebnisse</h1>
+
+        <p>Gesamtzahl der Nachrichten: {{ stats.total_messages }}</p>
+        <p>Gesamtzahl der Buchstaben: {{ stats.total_letters }}</p>
+        <p>Gesamtzahl der Wörter: {{ stats.total_words }}</p>
+        <p>Erste Nachricht am: {{ stats.first_message_date }}</p>
+        <p>Letzte Nachricht am: {{ stats.last_message_date }}</p>
+
+        <h2>Teilnehmer Statistiken</h2>
+
+        <!-- Dark Mode Toggle -->
+        <label class="switch">
+            <input type="checkbox" id="darkModeToggle" checked>
+            <span class="slider round"></span>
+        </label>
+
+        <!-- Tabs für die Teilnehmer -->
+        <ul class="nav nav-tabs" id="participantTabs" role="tablist">
+            {% for participant in stats.participants %}
+            <li class="nav-item">
+                <a class="nav-link {% if loop.first %}active{% endif %}" id="tab-{{ loop.index }}" data-toggle="tab" href="#participant-{{ loop.index }}" role="tab" aria-controls="participant-{{ loop.index }}" aria-selected="true">{{ participant }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="tab-content" id="participantTabContent">
+            {% for participant, data in stats.participants.items() %}
+            <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="participant-{{ loop.index }}" role="tabpanel" aria-labelledby="tab-{{ loop.index }}">
+                <h3>Statistiken für {{ participant }}</h3>
+                <p>Nachrichten gesendet: {{ data.messages_sent }}</p>
+                <p>Buchstaben gesendet: {{ data.letters_sent }}</p>
+                <p>Wörter gesendet: {{ data.words_sent }}</p>
+                <p>Durchschnittliche Länge der Nachrichten: {{ data.avg_message_length }}</p>
+                <p>Durchschnittliche Wortanzahl pro Nachricht: {{ data.avg_word_length }}</p>
+                {% if data.avg_response_time %}
+                <p>Durchschnittliche Antwortzeit: {{ data.avg_response_time }} Minuten</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2>Weitere Statistiken</h2>
+        <p>Der aktivste Teilnehmer ist: {{ stats.most_active_person }}</p>
+        <p>Der aktivste Tag war: {{ stats.most_active_day }}</p>
+
+        <h2>Nachrichten pro Tag</h2>
+        <img src="{{ url_for('static', filename='messages_per_day.png') }}" alt="Messages per Day">
+    </div>
+
+    <!-- Bootstrap and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript für Dark Mode Umschalter -->
+    <script>
+        const toggle = document.getElementById('darkModeToggle');
+        toggle.addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+</body>
+</html>
